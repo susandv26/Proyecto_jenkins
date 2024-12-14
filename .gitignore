@@ -1,3 +1,4 @@
 node_modules/
 echo "dev.log" >> /home/mi_proyecto/.gitignore
+package-lock.json
 
