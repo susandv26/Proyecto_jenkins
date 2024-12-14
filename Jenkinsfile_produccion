@@ -1,0 +1,39 @@
+pipeline {
+    agent any
+
+    environment {
+        BACKUP_DIR = "/var/www/backup"       // Directorio donde están los respaldos
+        PROD_DIR = "/var/www/production"    // Directorio de producción
+        LOG_DIR = "/var/logs"               // Directorio de logs
+        LOG_FILE = "restore_log.txt"        // Archivo de log
+    }
+
+    stages {
+        stage('Seleccionar Respaldo') {
+            steps {
+                script {
+                    // Busca el respaldo más reciente
+                    env.RESTORE_FILE = sh(
+                        script: "ls -t ${BACKUP_DIR} | head -n 1",
+                        returnStdout: true
+                    ).trim()
+                }
+                echo "Respaldo seleccionado: ${RESTORE_FILE}"
+            }
+        }
+        stage('Restaurar Producción') {
+            steps {
+                sh '''
+                tar -xzf ${BACKUP_DIR}/${RESTORE_FILE} -C /
+                echo "Restauración completada: $(date)" >> ${LOG_DIR}/${LOG_FILE}
+                '''
+            }
+        }
+    }
+
+    post {
+        always {
+            echo "Proceso de restauración completado. Log disponible en ${LOG_DIR}/${LOG_FILE}"
+        }
+    }
+}
