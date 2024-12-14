@@ -11,7 +11,7 @@ app.use(bodyParser.json());
 const productRoutes = require('./routes/products');
 app.use('/api/products', productRoutes);
 
-// Iniciar el servidor
+// Iniciar el servidor totalmente
 app.listen(PORT, () => {
   console.log(`Se levanto en http://localhost:${PORT}`);
 });
