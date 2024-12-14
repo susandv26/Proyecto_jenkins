@@ -15,6 +15,21 @@ pipeline {
                 '''
             }
         }
+        stage('Fusionar a Pruebas') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'github-token', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD')]) {
+                    sh '''
+                    cd /home/mi_proyecto
+                    git fetch origin
+                    git checkout prueba
+                    git pull origin prueba
+                    git merge desarrollo -m "Fusión automática de desarrollo a prueba"
+                    git push origin prueba
+                    echo "Fusión completada: $(date)" >> ${LOG_DIR}/${LOG_FILE}
+                    '''
+                }
+            }
+        }
         stage('Actualizar Código') {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'github-token', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD')]) {
@@ -39,8 +54,9 @@ pipeline {
             steps {
                 sh '''
                 pkill -f "npm run dev" || true
+                nohup npm run dev > /home/mi_proyecto/dev.log 2>&1 &
                 echo "Aplicación reiniciada: $(date)" >> ${LOG_DIR}/${LOG_FILE}
-                '''       
+                '''
             }
         }
     }
@@ -57,3 +73,4 @@ pipeline {
         }
     }
 }
+
