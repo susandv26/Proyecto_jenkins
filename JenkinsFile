@@ -18,15 +18,15 @@ pipeline {
         stage('Fusionar a Pruebas') {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'github-token', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD')]) {
-                    sh '''
-                    cd /home/mi_proyecto
-                    git fetch origin
-                    git checkout prueba
-                    git pull origin prueba
-                    git merge desarrollo -m "Fusión automática de desarrollo a prueba"
-                    git push origin prueba
-                    echo "Fusión completada: $(date)" >> ${LOG_DIR}/${LOG_FILE}
-                    '''
+            sh '''
+            cd /home/mi_proyecto
+            git fetch origin
+            git checkout prueba
+            git pull origin prueba
+            git merge desarrollo -m "Fusión automática de desarrollo a prueba"
+            git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/susandv26/proyecto_jenkins.git prueba
+            echo "Fusión completada y cambios empujados: $(date)" >> ${LOG_DIR}/${LOG_FILE}
+            '''
                 }
             }
         }
