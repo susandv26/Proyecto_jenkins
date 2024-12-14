@@ -38,9 +38,9 @@ pipeline {
         stage('Reiniciar Aplicación') {
             steps {
                 sh '''
-                pm2 restart server.js
+                pkill -f "npm run dev" || true
                 echo "Aplicación reiniciada: $(date)" >> ${LOG_DIR}/${LOG_FILE}
-                '''
+                '''       
             }
         }
     }
