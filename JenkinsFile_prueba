@@ -27,7 +27,7 @@ pipeline {
                     git checkout main
                     git pull origin main
                     git merge prueba -m "Fusión automática de prueba a producción"
-                    git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/susandv26/proyecto_jenkins.git produccion
+                    git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/susandv26/proyecto_jenkins.git main
                     echo "Fusión a producción completada: $(date)" >> ${LOG_DIR}/${LOG_FILE}
                     '''
                 }
