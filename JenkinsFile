@@ -1,0 +1,59 @@
+pipeline {
+    agent any
+
+    environment {
+        LOG_DIR = "/var/logs"        // Directorio de logs
+        LOG_FILE = "pipeline_log.txt" // Archivo de log dentro del directorio
+    }
+
+    stages {
+        stage('Preparar Logs') {
+            steps {
+                sh '''
+                mkdir -p ${LOG_DIR}
+                echo "Pipeline iniciado: $(date)" > ${LOG_DIR}/${LOG_FILE}
+                '''
+            }
+        }
+        stage('Actualizar Código') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'github-token', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD')]) {
+                    sh '''
+                    cd /home/mi_proyecto
+                    git pull origin pruebas
+                    echo "Código actualizado desde pruebas: $(date)" >> ${LOG_DIR}/${LOG_FILE}
+                    '''
+                }
+            }
+        }
+        stage('Instalar Dependencias') {
+            steps {
+                sh '''
+                cd /home/mi_proyecto
+                npm install
+                echo "Dependencias instaladas: $(date)" >> ${LOG_DIR}/${LOG_FILE}
+                '''
+            }
+        }
+        stage('Reiniciar Aplicación') {
+            steps {
+                sh '''
+                pm2 restart server.js
+                echo "Aplicación reiniciada: $(date)" >> ${LOG_DIR}/${LOG_FILE}
+                '''
+            }
+        }
+    }
+
+    post {
+        always {
+            echo "Pipeline completado. Log disponible en ${LOG_DIR}/${LOG_FILE}"
+        }
+        success {
+            echo "Pipeline ejecutado exitosamente."
+        }
+        failure {
+            echo "Pipeline fallido. Revisa los logs en ${LOG_DIR}/${LOG_FILE}"
+        }
+    }
+}
