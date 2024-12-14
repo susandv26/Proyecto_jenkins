@@ -20,7 +20,7 @@ pipeline {
                 withCredentials([usernamePassword(credentialsId: 'github-token', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD')]) {
                     sh '''
                     cd /home/mi_proyecto
-                    git pull origin pruebas
+                    git pull origin prueba
                     echo "Código actualizado desde pruebas: $(date)" >> ${LOG_DIR}/${LOG_FILE}
                     '''
                 }
