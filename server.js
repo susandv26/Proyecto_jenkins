@@ -13,5 +13,5 @@ app.use('/api/products', productRoutes);
 
 // Iniciar el servidor
 app.listen(PORT, () => {
-  console.log(`Servidor corriendo en http://localhost:${PORT}`);
+  console.log(`Servidor levantado en http://localhost:${PORT}`);
 });
