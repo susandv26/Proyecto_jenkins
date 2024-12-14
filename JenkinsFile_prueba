@@ -1,0 +1,71 @@
+pipeline {
+    agent any
+
+    environment {
+        LOG_DIR = "/var/logs"        // Directorio de logs
+        LOG_FILE = "pipeline_log.txt" // Archivo de log dentro del directorio
+        PROD_DIR = "/var/www/production" // Directorio de producción
+        BACKUP_DIR = "/var/www/backup"   // Directorio de respaldo
+    }
+
+    stages {
+        stage('Preparar Logs') {
+            steps {
+                sh '''
+                mkdir -p ${LOG_DIR}
+                echo "Pipeline iniciado: $(date)" > ${LOG_DIR}/${LOG_FILE}
+                '''
+            }
+        }
+
+        stage('Fusionar a Producción') {
+            steps {
+                 withCredentials([usernamePassword(credentialsId: 'github-token', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD')]) {
+            sh '''
+            cd /home/mi_proyecto
+            git fetch origin
+            git reset --hard        # Revierte cambios no confirmados
+            git clean -fd           # Limpia archivos no rastreados
+            git checkout main
+            git pull origin main
+            git merge prueba -m "Fusión automática de prueba a main"
+            git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/susandv26/proyecto_jenkins.git main
+            echo "Fusión a main completada: $(date)" >> ${LOG_DIR}/${LOG_FILE}
+            '''
+                }
+            }
+        }
+
+        stage('Respaldar Producción') {
+            steps {
+                sh '''
+                mkdir -p ${BACKUP_DIR}
+                BACKUP_NAME="production_backup_$(date +%Y%m%d%H%M%S).tar.gz"
+                tar -czf ${BACKUP_DIR}/${BACKUP_NAME} ${PROD_DIR}
+                echo "Respaldo completado: ${BACKUP_DIR}/${BACKUP_NAME}" >> ${LOG_DIR}/${LOG_FILE}
+                '''
+            }
+        }
+
+        stage('Copiar a Producción') {
+            steps {
+                sh '''
+                rsync -av --delete /home/mi_proyecto/ ${PROD_DIR}/
+                echo "Código desplegado en producción: $(date)" >> ${LOG_DIR}/${LOG_FILE}
+                '''
+            }
+        }
+    }
+
+    post {
+        always {
+            echo "Pipeline completado. Log disponible en ${LOG_DIR}/${LOG_FILE}"
+        }
+        success {
+            echo "Pipeline ejecutado exitosamente."
+        }
+        failure {
+            echo "Pipeline fallido. Revisa los logs en ${LOG_DIR}/${LOG_FILE}"
+        }
+    }
+}
