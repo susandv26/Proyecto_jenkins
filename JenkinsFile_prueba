@@ -20,18 +20,16 @@ pipeline {
 
         stage('Fusionar a Producción') {
             steps {
-                 withCredentials([usernamePassword(credentialsId: 'github-token', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD')]) {
-            sh '''
-            cd /home/mi_proyecto
-            git fetch origin
-            git reset --hard        # Revierte cambios no confirmados
-            git clean -fd           # Limpia archivos no rastreados
-            git checkout main
-            git pull origin main
-            git merge prueba -m "Fusión automática de prueba a main"
-            git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/susandv26/proyecto_jenkins.git main
-            echo "Fusión a main completada: $(date)" >> ${LOG_DIR}/${LOG_FILE}
-            '''
+                withCredentials([usernamePassword(credentialsId: 'github-token', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD')]) {
+                    sh '''
+                    cd /home/mi_proyecto
+                    git fetch origin
+                    git checkout main
+                    git pull origin main
+                    git merge prueba -m "Fusión automática de prueba a producción"
+                    git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/susandv26/proyecto_jenkins.git main
+                    echo "Fusión a producción completada: $(date)" >> ${LOG_DIR}/${LOG_FILE}
+                    '''
                 }
             }
         }
