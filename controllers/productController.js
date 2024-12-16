@@ -17,7 +17,7 @@ exports.createProduct = (req, res) => {
 };
 
 // Eliminar un producto
-xports.deleteProduct = (req, res) => {
+exports.deleteProduct = (req, res) => {
   const id = parseInt(req.params.id); // Obtiene el ID del producto desde la URL
   const index = products.findIndex((product) => product.id === id); // Encuentra el índice del producto
 
