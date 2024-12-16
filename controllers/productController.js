@@ -28,3 +28,5 @@ exports.deleteProduct = (req, res) => {
   products.splice(index, 1); // Elimina el producto del array
   res.status(204).send(); // Responde con un código 204 (sin contenido) para confirmar
 };
+
+
