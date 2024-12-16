@@ -13,4 +13,3 @@ describe('Pruebas de rutas de productos', () => {
     expect(response.status).toBe(404); // Asegúrate de que las rutas no definidas respondan con un error
   });
 });
-
