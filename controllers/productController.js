@@ -16,17 +16,4 @@ exports.createProduct = (req, res) => {
   res.status(201).json(newProduct);
 };
 
-// Eliminar un producto
-exports.deleteProduct = (req, res) => {
-  const id = parseInt(req.params.id); // Obtiene el ID del producto desde la URL
-  const index = products.findIndex((product) => product.id === id); // Encuentra el índice del producto
-
-  if (index === -1) {
-    return res.status(404).json({ message: 'Producto no encontrado' }); // Devuelve un error si no existe
-  }
-
-  products.splice(index, 1); // Elimina el producto del array
-  res.status(204).send(); // Responde con un código 204 (sin contenido) para confirmar
-};
-
 
