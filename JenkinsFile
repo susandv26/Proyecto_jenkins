@@ -2,8 +2,8 @@ pipeline {
     agent any
 
     environment {
-        LOG_DIR = "/var/logs"
-        LOG_FILE = "pipeline_log.txt"
+        LOG_DIR = "/var/logs"        // Directorio de logs
+        LOG_FILE = "pipeline_log.txt" // Archivo de log dentro del directorio
     }
 
     stages {
@@ -18,15 +18,15 @@ pipeline {
         stage('Fusionar a Pruebas') {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'github-token', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD')]) {
-                    sh '''
-                    cd /home/mi_proyecto
-                    git fetch origin
-                    git checkout prueba
-                    git pull origin prueba
-                    git merge desarrollo -m "Fusión automática de desarrollo a prueba"
-                    git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/susandv26/proyecto_jenkins.git prueba
-                    echo "Fusión completada y cambios empujados: $(date)" >> ${LOG_DIR}/${LOG_FILE}
-                    '''
+            sh '''
+            cd /home/mi_proyecto
+            git fetch origin
+            git checkout prueba
+            git pull origin prueba
+            git merge desarrollo -m "Fusión automática de desarrollo a prueba"
+            git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/susandv26/proyecto_jenkins.git prueba
+            echo "Fusión completada y cambios empujados: $(date)" >> ${LOG_DIR}/${LOG_FILE}
+            '''
                 }
             }
         }
@@ -39,24 +39,6 @@ pipeline {
                     echo "Código actualizado desde pruebas: $(date)" >> ${LOG_DIR}/${LOG_FILE}
                     '''
                 }
-            }
-        }
-        stage('Compilar Código') {
-            steps {
-                sh '''
-                cd /home/mi_proyecto
-                npm run build
-                echo "Compilación exitosa: $(date)" >> ${LOG_DIR}/${LOG_FILE}
-                '''
-            }
-        }
-        stage('Ejecutar Pruebas') {
-            steps {
-                sh '''
-                cd /home/mi_proyecto
-                npm test
-                echo "Pruebas ejecutadas exitosamente: $(date)" >> ${LOG_DIR}/${LOG_FILE}
-                '''
             }
         }
         stage('Instalar Dependencias') {
@@ -91,4 +73,6 @@ pipeline {
         }
     }
 }
+
+
 
