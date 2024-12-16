@@ -11,7 +11,13 @@ app.use(bodyParser.json());
 const productRoutes = require('./routes/products');
 app.use('/api/products', productRoutes);
 
-// Iniciar el servidor totalmente
-app.listen(PORT, () => {
-  console.log(`Se levanto en http://localhost:${PORT}`);
-});
+// Exportar la aplicación para pruebas
+module.exports = app;
+
+// Iniciar el servidor solo si se ejecuta directamente
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`Se levantó en http://localhost:${PORT}`);
+  });
+}
+
