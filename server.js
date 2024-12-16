@@ -2,7 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 
 const app = express();
-const PORT = 4000;
+const PORT =4000;
 
 // Middleware
 app.use(bodyParser.json());
@@ -11,7 +11,13 @@ app.use(bodyParser.json());
 const productRoutes = require('./routes/products');
 app.use('/api/products', productRoutes);
 
-// Iniciar el servidor totalmente
-app.listen(PORT, () => {
-  console.log(`Se levanto en http://localhost:${PORT}`);
-});
+// Exportar la aplicación para pruebas
+module.exports = app;
+
+// Iniciar el servidor solo si se ejecuta directamente
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`Se levantó en http://localhost:${PORT}`);
+  });
+}
+

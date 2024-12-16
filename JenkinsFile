@@ -15,18 +15,28 @@ pipeline {
                 '''
             }
         }
+        stage('Validar Desarrollo') {
+            steps {
+                sh '''
+                cd /home/mi_proyecto
+                npm install
+                npm test || exit 1
+                echo "Pruebas en desarrollo completadas exitosamente: $(date)" >> ${LOG_DIR}/${LOG_FILE}
+                '''
+            }
+        }
         stage('Fusionar a Pruebas') {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'github-token', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD')]) {
-            sh '''
-            cd /home/mi_proyecto
-            git fetch origin
-            git checkout prueba
-            git pull origin prueba
-            git merge desarrollo -m "Fusión automática de desarrollo a prueba"
-            git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/susandv26/proyecto_jenkins.git prueba
-            echo "Fusión completada y cambios empujados: $(date)" >> ${LOG_DIR}/${LOG_FILE}
-            '''
+                    sh '''
+                    cd /home/mi_proyecto
+                    git fetch origin
+                    git checkout prueba
+                    git pull origin prueba
+                    git merge desarrollo -m "Fusión automática de desarrollo a prueba"
+                    git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/susandv26/proyecto_jenkins.git prueba
+                    echo "Fusión completada y cambios empujados: $(date)" >> ${LOG_DIR}/${LOG_FILE}
+                    '''
                 }
             }
         }
